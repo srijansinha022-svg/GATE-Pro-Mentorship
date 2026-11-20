@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GATE Pro Mentorship</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#6366f1;--primary-hover:#4f46e5;--success:#10b981;--success-hover:#059669;--card-bg:rgba(255,255,255,.95);--text-main:#1e293b;--text-muted:#64748b;--sidebar-bg:#1e293b}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
+body{background-color:#0f172a;display:flex;justify-content:center;align-items:center;min-height:100vh;min-height:100dvh;padding:20px}
+
+.bg-layer{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;pointer-events:none}
+.bg-blur{z-index:-3;background:#0f172a url('bg.jpg.png') center center/cover no-repeat;-webkit-filter:blur(18px) brightness(.85);filter:blur(18px) brightness(.85);-webkit-transform:scale(1.08);transform:scale(1.08)}
+.bg-main{z-index:-2;background:url('bg.jpg.png') center center/contain no-repeat}
+body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,.45);z-index:-1;pointer-events:none}
+/* phones / tablets: the WHOLE picture stays visible (no zoom / no crop), sharp, centred; blurred copy fills the empty space around it */
+@media (max-width:900px),(orientation:portrait){
+  .bg-blur{-webkit-filter:blur(12px) brightness(.8);filter:blur(12px) brightness(.8)}
+  .bg-main{background-position:center center;background-size:contain;background-repeat:no-repeat}
+}
+
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);display:none;justify-content:center;align-items:center;z-index:999;padding:15px;overflow-y:auto}
+.modal-box{background:#fff;padding:30px;border-radius:15px;width:100%;max-width:500px;text-align:center;animation:pop .3s ease;max-height:92vh;overflow-y:auto}
+@keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.container{background:var(--card-bg);border-radius:20px;box-shadow:0 25px 50px -12px rgba(0,0,0,.5);width:100%;padding:40px;display:flex;flex-direction:column;animation:slideUp .5s ease-out;max-width:450px;border:1px solid rgba(255,255,255,.2)}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+h2{color:var(--text-main);font-size:22px;font-weight:700;text-align:center;margin-bottom:20px}
+.input-group{margin-bottom:15px}
+.input-group label,.input-row label{display:block;margin-bottom:5px;color:var(--text-muted);font-size:13px;font-weight:600;text-transform:uppercase}
+.input-group input,.input-group select,.input-group textarea,.input-row input,.input-row select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;background:rgba(255,255,255,.9)}
+.input-group input:focus,.input-group select:focus,.input-row input:focus{border-color:var(--primary);background:#fff}
+.req::after{content:" *";color:#ef4444}
+.btn{padding:12px;border:none;border-radius:10px;font-size:15px;font-weight:600;color:#fff;cursor:pointer;transition:.3s;display:inline-flex;justify-content:center;align-items:center;width:100%}
+.btn:disabled{opacity:.7;cursor:not-allowed}
+.btn-primary{background:var(--primary)}.btn-primary:hover{background:var(--primary-hover)}
+.btn-success{background:var(--success)}.btn-success:hover{background:var(--success-hover)}
+.btn-danger{background:#ef4444}.btn-danger:hover{background:#dc2626}
+.btn-warn{background:#f59e0b}.btn-warn:hover{background:#d97706}
+.btn-gray{background:#64748b}.btn-gray:hover{background:#475569}
+.sm{width:auto;padding:4px 10px;font-size:12px}
+
+.btn-spin{display:inline-block;flex:none;width:15px;height:15px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin-right:8px}
+.sm .btn-spin{width:11px;height:11px;border-width:2px;margin-right:5px}
+.big-spin{width:46px;height:46px;border:5px solid rgba(99,102,241,.2);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#viewLoader{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(248,250,252,.65);display:none;justify-content:center;align-items:center;z-index:50}
+#netBadge{position:fixed;right:16px;bottom:16px;background:#1e293b;color:#fff;padding:8px 14px;border-radius:25px;font-size:12px;display:none;align-items:center;gap:8px;z-index:1200;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+#netBadge .btn-spin{margin:0}
+
+/* upload progress box */
+.pbar{height:16px;background:#e2e8f0;border-radius:10px;overflow:hidden;margin:14px 0 8px}
+.pbar>div{height:100%;width:0;background:linear-gradient(90deg,#6366f1,#10b981);transition:width .2s}
+.pct{font-size:36px;font-weight:700;color:var(--primary)}
+
+.msg{padding:10px;border-radius:8px;margin-top:15px;display:none;font-size:13px;text-align:center;font-weight:500}
+.error-msg{background:#fee2e2;color:#991b1b}
+#dashboardLayout{display:none;width:100%;height:calc(100vh - 40px);height:calc(100dvh - 40px);background:#f1f5f9;border-radius:15px;overflow:hidden;box-shadow:0 25px 50px -12px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.2)}
+.sidebar{width:260px;background:var(--sidebar-bg);color:#fff;display:flex;flex-direction:column}
+.sidebar-header{padding:25px 20px;border-bottom:1px solid #334155;font-size:18px;font-weight:700;line-height:1.2}
+.sidebar-menu{flex:1;padding:20px 0;overflow-y:auto}
+.sidebar-menu button{width:100%;padding:15px 25px;text-align:left;background:none;border:none;color:#cbd5e1;font-size:14px;font-weight:500;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:10px;border-left:4px solid transparent}
+.sidebar-menu button:hover,.sidebar-menu button.active{background:#334155;color:#fff;border-left-color:var(--primary)}
+.sidebar-footer{padding:20px;border-top:1px solid #334155}
+.main-content{flex:1;display:flex;flex-direction:column;background:#f8fafc;overflow:hidden;position:relative}
+.topbar{background:#fff;padding:15px 30px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0}
+.topbar h2{margin:0;font-size:20px;text-align:left}
+.content-area{flex:1;padding:30px;overflow-y:auto}
+.view-section{display:none}.view-section.active{display:block}
+.card{background:#fff;padding:25px;border-radius:15px;border:1px solid #e2e8f0;margin-bottom:20px}
+.table-container{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th,td{padding:12px 15px;text-align:left;border-bottom:1px solid #e2e8f0;font-size:13px;white-space:nowrap}
+th{background:#f8fafc;color:#64748b;font-weight:600}
+.badge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.bg-booked{background:#d1fae5;color:#065f46}.bg-cancelled{background:#fee2e2;color:#991b1b}.bg-pending{background:#fef3c7;color:#92400e}.bg-done{background:#dbeafe;color:#1e40af}.bg-blocked{background:#fecaca;color:#7f1d1d}
+.input-row{display:flex;gap:15px;margin-bottom:15px}.input-row>div{flex:1}
+.filters{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.filters input,.filters select{padding:8px 10px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;outline:none}
+.bulkbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:#eef2ff;border:1px solid #c7d2fe;padding:10px 12px;border-radius:10px;margin-bottom:15px}
+.bulkbar .cnt{font-weight:600;color:#3730a3;font-size:13px;margin-right:6px}
+.addbox{background:#f8fafc;border:1px dashed #94a3b8;border-radius:10px;padding:15px;margin-bottom:20px}
+.addbox h4{margin-bottom:10px;font-size:14px}
+.notice-banner{background:#e0e7ff;color:#3730a3;padding:10px;border-radius:8px;text-align:center;margin-bottom:15px;font-weight:500;font-size:14px;display:none}
+.notice-banner a{color:#4338ca;font-weight:700;text-decoration:underline}
+.chip{background:#e2e8f0;padding:5px 10px;border-radius:5px;font-size:13px;display:flex;gap:8px;align-items:center}
+.chip button{background:transparent;border:none;color:red;cursor:pointer;font-weight:700}
+.chip button.ed{color:#4f46e5}
+.slot-stat-badge{padding:3px 8px;border-radius:6px;font-size:12px;font-weight:700}
+.stat-full{background:#fee2e2;color:#991b1b}.stat-available{background:#d1fae5;color:#065f46}
+.cap-input{width:60px;padding:5px;text-align:center;border:1px solid #cbd5e1;border-radius:5px}
+.cell-in{padding:4px 6px;border:1px solid #cbd5e1;border-radius:5px}
+small{color:#64748b}
+.success-box{background:#fff;padding:30px 28px;border-radius:15px;max-width:520px;width:100%;text-align:left;animation:pop .3s ease;max-height:92vh;overflow-y:auto}
+.success-box .icon{font-size:52px;margin-bottom:10px;text-align:center}
+.success-box h2{color:#059669;margin-bottom:14px}
+.success-box p{color:#334155;font-size:14px;line-height:1.65;margin-bottom:12px}
+.success-box .det p{margin-bottom:4px;font-size:15px}
+.util-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:15px;margin-top:15px}
+.util-card{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:20px;border-radius:12px}
+.util-card h4{font-size:13px;opacity:.85;margin-bottom:8px;font-weight:500}
+.util-card .big{font-size:28px;font-weight:700}
+.util-card .row{display:flex;justify-content:space-between;margin-top:10px;font-size:12px;opacity:.95}
+.vres{font-size:13px;margin:12px 0;padding:10px;border-radius:8px;background:#f1f5f9;text-align:left;line-height:1.6}
+.more-row td{text-align:center;background:#f8fafc}
+@media(max-width:768px){
+  body{padding:10px;align-items:flex-start}
+  .container{padding:25px;margin:auto}
+  #dashboardLayout{flex-direction:column;height:auto;min-height:calc(100dvh - 20px)}
+  .sidebar{width:100%;border-bottom:1px solid #334155}
+  .sidebar-menu{display:flex;flex-wrap:wrap;padding:10px}
+  .sidebar-menu>div{display:flex;flex-wrap:wrap}
+  .sidebar-menu button{width:auto;padding:10px 15px;border-radius:5px;border-left:none}
+  .main-content{overflow:visible;min-height:60vh}
+  .content-area{padding:15px}
+  .topbar{padding:12px 15px}
+  .input-row{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<div class="bg-layer bg-blur"></div>
+<div class="bg-layer bg-main"></div>
+<div id="netBadge"><span class="btn-spin"></span>Working…</div>
+
+<div class="modal-overlay" id="profileModal"><div class="modal-box">
+  <h2>Complete Your Profile</h2>
+  <p style="font-size:13px;margin-bottom:15px;color:#64748b">All fields are compulsory (<span style="color:#ef4444">*</span>). They cannot be changed later.</p>
+  <div class="input-group"><input type="text" id="profName" placeholder="Full Name *"></div>
+  <div class="input-group"><select id="profBranch"><option value="">Select Branch *</option></select></div>
+  <div class="input-group"><select id="profCategory"><option value="">Select Category *</option></select></div>
+  <div class="input-group"><input type="text" id="profBatch" placeholder="Batch (e.g. CSE-A) *"></div>
+  <div class="input-group"><select id="profYear"><option value="">Target Year *</option></select></div>
+  <div class="input-group"><input type="text" id="profPhone" placeholder="Register PW Number *"></div>
+  <button class="btn btn-primary" onclick="run(this,submitProfile)">Save Profile</button>
+</div></div>
+
+<div class="modal-overlay" id="statusModal"><div class="modal-box">
+  <h2>Mentorship Status</h2>
+  <p style="font-size:14px;margin-bottom:20px">Did you attend your mentorship session? (This can be marked only once.)</p>
+  <div style="display:flex;gap:10px">
+    <button class="btn btn-success" onclick="run(this,()=>submitStatus('Done'))">Done</button>
+    <button class="btn btn-danger" onclick="run(this,()=>submitStatus('Not Done'))">Not Done</button>
+  </div>
+</div></div>
+
+<div class="modal-overlay" id="joinModal"><div class="modal-box">
+  <h2>Join Session</h2>
+  <p style="font-size:15px;margin-bottom:8px;color:#1e293b;font-weight:600">Are you going to join this mentorship session?</p>
+  <p style="font-size:13px;margin-bottom:20px;color:#64748b" id="joinInfo"></p>
+  <div style="display:flex;gap:10px">
+    <button class="btn btn-success" onclick="run(this,()=>submitJoin('yes'))">Yes</button>
+    <button class="btn btn-danger" onclick="run(this,()=>submitJoin('no'))">No</button>
+  </div>
+</div></div>
+
+<div class="modal-overlay" id="bookingSuccessModal"><div class="success-box">
+  <div class="icon">🎉</div>
+  <h2 style="text-align:center">Booking Confirmed!</h2>
+  <div class="det">
+    <p>Booking date - <b id="succDate"></b></p>
+    <p>Booking Time - <b id="succTime"></b></p>
+    <p>Faculty name - <b id="succFac"></b></p>
+  </div>
+  <p style="margin-top:14px">The session link will be visible in My Scheduled Sessions 15 minutes before your scheduled time.</p>
+  <p>Please click on Join at your scheduled time to attend the session.</p>
+  <p>Once the link is updated, you will also be notified in the Close Faculty Group.</p>
+  <p>You will get 3 booking chances per month.</p>
+  <p>You can make your next booking after <b id="succGap">10</b> days.</p>
+  <p>Note: Please make sure to join the session on time. 😊</p>
+  <button class="btn btn-primary" onclick="document.getElementById('bookingSuccessModal').style.display='none'">Got it</button>
+</div></div>
+
+<div class="modal-overlay" id="rescheduleModal"><div class="modal-box" style="text-align:left">
+  <h2 style="text-align:left">Reschedule Booking</h2>
+  <p style="font-size:13px;color:#64748b;margin-bottom:15px" id="rescheduleInfo"></p>
+  <div class="input-group"><label>New Date</label><input type="date" id="reschDate"></div>
+  <div class="input-group"><label>New Time</label><input type="time" id="reschTime"></div>
+  <div style="display:flex;gap:10px">
+    <button class="btn btn-primary" onclick="run(this,confirmReschedule)">Save</button>
+    <button class="btn btn-gray" onclick="document.getElementById('rescheduleModal').style.display='none'">Cancel</button>
+  </div>
+</div></div>
+
+<div class="modal-overlay" id="bulkRescheduleModal"><div class="modal-box" style="text-align:left">
+  <h2 style="text-align:left">Bulk Reschedule (Date &amp; Time)</h2>
+  <p style="font-size:13px;color:#64748b;margin-bottom:15px" id="bulkInfo"></p>
+  <div class="input-group"><label>New Date</label><input type="date" id="bulkDate"></div>
+  <div class="input-group"><label>New Time</label><input type="time" id="bulkTime"></div>
+  <div style="display:flex;gap:10px">
+    <button class="btn btn-primary" onclick="run(this,confirmBulkReschedule)">Update All</button>
+    <button class="btn btn-gray" onclick="document.getElementById('bulkRescheduleModal').style.display='none'">Cancel</button>
+  </div>
+</div></div>
+
+<div class="modal-overlay" id="bulkLinkModal"><div class="modal-box" style="text-align:left">
+  <h2 style="text-align:left">Bulk Update Meeting Link</h2>
+  <p style="font-size:13px;color:#64748b;margin-bottom:15px" id="bulkLinkInfo"></p>
+  <div class="input-group"><label>Meeting Link</label><input type="text" id="bulkLinkInput" placeholder="https://..."></div>
+  <div style="display:flex;gap:10px">
+    <button class="btn btn-success" onclick="run(this,confirmBulkLink)">Update All</button>
+    <button class="btn btn-gray" onclick="document.getElementById('bulkLinkModal').style.display='none'">Cancel</button>
+  </div>
+</div></div>
+
+<div class="modal-overlay" id="adminCancelModal"><div class="modal-box" style="text-align:left">
+  <h2 style="text-align:left">Cancel Booking</h2>
+  <p style="font-size:13px;color:#64748b;margin-bottom:15px" id="adminCancelInfo"></p>
+  <div class="input-group"><label class="req">Cancellation Reason</label><input type="text" id="adminCancelReason" maxlength="300" placeholder="Reason (compulsory)"></div>
+  <p style="font-size:12px;color:#64748b;margin-bottom:15px">This reason will also be shown to the student in My Scheduled Sessions.</p>
+  <div style="display:flex;gap:10px">
+    <button class="btn btn-danger" onclick="run(this,confirmAdminCancel)">Cancel Booking</button>
+    <button class="btn btn-gray" onclick="document.getElementById('adminCancelModal').style.display='none'">Close</button>
+  </div>
+</div></div>
+
+<div class="modal-overlay" id="bulkDelUsersModal"><div class="modal-box" style="text-align:left">
+  <h2 style="text-align:left">Delete Selected Users</h2>
+  <p style="font-size:14px;margin-bottom:12px;color:#991b1b;font-weight:600" id="bulkDelInfo"></p>
+  <div style="background:#fef3c7;color:#92400e;padding:10px;border-radius:8px;font-size:12px;line-height:1.5;margin-bottom:12px">
+    <b>Optional – protect users:</b> upload a CSV of users you do NOT want deleted (columns: <b>User ID, Phone Number, Branch, Target Year</b>). Any selected user found in this file will be kept.
+  </div>
+  <input type="file" id="protectFile" accept=".csv" style="width:100%;padding:8px;border:1px dashed #f59e0b;border-radius:8px" onchange="$('protectResult').innerHTML=''">
+  <div id="protectResult" class="vres" style="display:none"></div>
+  <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+    <button class="btn btn-warn" style="flex:1" onclick="run(this,validateProtect)">✔ Validate</button>
+    <button class="btn btn-danger" style="flex:1" onclick="run(this,confirmBulkDelUsers)">🗑 Delete</button>
+    <button class="btn btn-gray" style="flex:1" onclick="document.getElementById('bulkDelUsersModal').style.display='none'">Cancel</button>
+  </div>
+</div></div>
+
+<div class="modal-overlay" id="progressModal" style="z-index:1500"><div class="modal-box">
+  <h2 id="progTitle">Uploading…</h2>
+  <div class="pct" id="progPct">0%</div>
+  <div class="pbar"><div id="progBar"></div></div>
+  <p style="font-size:13px;color:#64748b;line-height:1.6" id="progText"></p>
+  <button class="btn btn-primary" id="progClose" style="display:none;margin-top:14px" onclick="document.getElementById('progressModal').style.display='none'">OK</button>
+</div></div>
+
+<div class="container" id="bootLoader" style="align-items:center"><h2 style="margin:0 0 15px">Loading…</h2><div class="big-spin"></div></div>
+
+<div class="container" id="loginSection" style="display:none">
+  <h2>GATE Pro Mentorship</h2>
+  <div class="input-group"><label>Phone Number</label><input type="tel" id="loginPhone" placeholder="10-digit registered number" autocomplete="tel"></div>
+  <div class="input-group" id="adminCodeGroup" style="display:none"><label style="color:#ef4444">Security Code (Admin)</label><input type="password" id="loginAdminCode" placeholder="Enter Admin Code" autocomplete="off"></div>
+  <button class="btn btn-primary" id="loginBtn" onclick="run(this,handleLogin)">Login</button>
+  <div class="msg error-msg" id="loginError"></div>
+</div>
+
+<div id="dashboardLayout">
+  <div class="sidebar">
+    <div class="sidebar-header">GATE Pro Mentorship</div>
+    <div class="sidebar-menu">
+      <div id="adminMenus" style="display:none">
+        <button onclick="switchView('viewAllBookings',this)" class="active">📊 All Bookings</button>
+        <button onclick="switchView('viewUtilization',this)">📈 Session Utilization</button>
+        <button onclick="switchView('viewKnowStudents',this)">👨‍🎓 Know Your Students</button>
+        <button onclick="switchView('viewAddMaster',this)">🗂️ Category &amp; Branches</button>
+        <button onclick="switchView('viewAddFaculty',this)">👨‍🏫 Faculty List</button>
+        <button onclick="switchView('viewSlots',this)">⏰ Manage Slots</button>
+        <button onclick="switchView('viewUsersCSV',this)">👥 Add Users</button>
+        <button onclick="switchView('viewSettings',this)">⚙️ System Settings</button>
+      </div>
+      <div id="studentMenus" style="display:none">
+        <button onclick="switchView('viewBook',this)" class="active">📝 Book Mentorship</button>
+        <button onclick="switchView('viewMySchedule',this)">📅 My Scheduled Sessions</button>
+        <button onclick="switchView('viewCancel',this)">❌ Cancel Session</button>
+      </div>
+    </div>
+    <div class="sidebar-footer"><button class="btn btn-danger" onclick="run(this,logout)">Logout</button></div>
+  </div>
+
+  <div class="main-content">
+    <div id="viewLoader"><div class="big-spin"></div></div>
+    <div class="topbar"><h2 id="pageTitle">Dashboard</h2><div style="font-weight:600;color:#64748b;font-size:14px">Welcome, <span id="displayName" style="color:var(--primary)">User</span></div></div>
+    <div class="content-area">
+
+      <!-- ===== ALL BOOKINGS ===== -->
+      <div id="viewAllBookings" class="view-section active"><div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:10px">
+          <h3>All Student Bookings</h3>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-primary sm" style="padding:8px 15px" onclick="run(this,()=>downloadCSV('bookings'))">Download CSV</button>
+            <button class="btn btn-danger sm" style="padding:8px 15px" onclick="run(this,clearAllBookings)">🗑 Clear All Bookings</button>
+          </div>
+        </div>
+        <div class="filters">
+          <input type="date" id="filterFrom" title="From date">
+          <input type="date" id="filterTo" title="To date">
+          <select id="filterBranch"><option value="">All Branches</option></select>
+          <select id="filterCategory"><option value="">All Categories</option></select>
+          <select id="filterFaculty"><option value="">All Faculties</option></select>
+          <input type="text" id="filterSearch" placeholder="Search Name / ID / Phone / Mail..." onkeydown="if(event.key==='Enter')run($('applyBookBtn'),applyBookingFilter)">
+          <button class="btn btn-primary sm" id="applyBookBtn" style="padding:8px 16px" onclick="run(this,applyBookingFilter)">🔍 Apply Filter</button>
+          <button class="btn btn-gray sm" style="padding:8px 16px" onclick="run(this,resetBookingFilter)">Reset</button>
+        </div>
+        <div class="bulkbar">
+          <span class="cnt" id="selCount">0 selected</span>
+          <button class="btn btn-success sm" style="padding:7px 12px" onclick="run(this,openBulkLink)">🔗 Bulk Set Link</button>
+          <button class="btn btn-danger sm" style="padding:7px 12px" onclick="run(this,bulkDeleteLinks)">🧹 Bulk Delete Link</button>
+          <button class="btn btn-warn sm" style="padding:7px 12px" onclick="run(this,openBulkReschedule)">📅 Bulk Date &amp; Time</button>
+          <button class="btn btn-danger sm" style="padding:7px 12px" onclick="run(this,openBulkCancel)">❌ Bulk Cancel</button>
+          <small>Tick the boxes in the first column for bulk actions, or use the buttons on each row for a single student.</small>
+        </div>
+        <div class="table-container"><table>
+          <thead><tr>
+            <th style="width:30px"><input type="checkbox" id="selectAllBookings" onchange="toggleSelectAll(this)"></th>
+            <th>Student</th><th>Mail ID</th><th>Phone</th><th>Branch/Batch</th><th>Faculty</th><th>Date &amp; Time</th><th>Booking Status</th><th>Session Status</th><th>Cancelled By / Reason</th><th>Meeting Link</th><th>Action</th>
+          </tr></thead>
+          <tbody id="adminBookingsBody"></tbody></table></div>
+      </div></div>
+
+      <!-- ===== UTILIZATION ===== -->
+      <div id="viewUtilization" class="view-section"><div class="card">
+        <h3 style="margin-bottom:5px">Session Utilization Status (by Month)</h3>
+        <p style="font-size:13px;color:#64748b;margin-bottom:15px">Total bookings, sessions done, not joined, and cancelled per month.</p>
+        <div id="utilContainer"><p style="color:#64748b">Loading…</p></div>
+        <h4 style="margin-top:25px;margin-bottom:10px">Detailed Table</h4>
+        <div class="table-container"><table>
+          <thead><tr><th>Month</th><th>Total</th><th>Booked</th><th>Done</th><th>Not Joined</th><th>Not Done</th><th>Declined</th><th>Cancelled</th></tr></thead>
+          <tbody id="utilBody"></tbody></table></div>
+      </div></div>
+
+      <!-- ===== KNOW YOUR STUDENTS ===== -->
+      <div id="viewKnowStudents" class="view-section"><div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+          <h3>Student Database</h3><button class="btn btn-primary sm" style="padding:8px 15px" onclick="run(this,()=>downloadCSV('students'))">Download CSV</button></div>
+        <div class="filters">
+          <select id="searchStudentBranch"><option value="">All Branches</option></select>
+          <select id="searchStudentYear"><option value="">All Target Years</option></select>
+          <select id="searchStudentCategory"><option value="">All Categories</option></select>
+          <input type="text" id="searchStudentPhone" placeholder="Search Name / ID / PW..." onkeydown="if(event.key==='Enter')run($('applyStuBtn'),applyStudentFilter)">
+          <button class="btn btn-primary sm" id="applyStuBtn" style="padding:8px 16px" onclick="run(this,applyStudentFilter)">🔍 Apply Filter</button>
+          <button class="btn btn-gray sm" style="padding:8px 16px" onclick="run(this,resetStudentFilter)">Reset</button>
+        </div>
+        <div class="table-container"><table><thead><tr><th>Name</th><th>Branch</th><th>Batch</th><th>Target Year</th><th>PW Number</th><th>Category</th><th>Status</th><th>Action</th></tr></thead><tbody id="studentsBody"></tbody></table></div>
+      </div></div>
+
+      <!-- ===== CATEGORY / BRANCH / TARGET YEAR ===== -->
+      <div id="viewAddMaster" class="view-section"><div class="card">
+        <h3 style="margin-bottom:15px">Manage Categories, Branches &amp; Target Years</h3>
+        <div class="input-row" style="padding-bottom:20px;border-bottom:1px solid #ccc">
+          <div><label>Add Category</label><input type="text" id="newCatName" placeholder="e.g. GATE"></div>
+          <div style="display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="run(this,addCat)">Add</button></div></div>
+        <div id="categoryList" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:30px"></div>
+        <div class="input-row">
+          <div><label>Add Branch</label><input type="text" id="newBranchName" placeholder="e.g. CSE"></div>
+          <div style="display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="run(this,addBranch)">Add</button></div></div>
+        <div id="branchList" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:30px"></div>
+        <div class="input-row" style="padding-top:20px;border-top:1px solid #ccc">
+          <div><label>Add Target Year</label><input type="text" id="newYearName" placeholder="e.g. 2029" maxlength="12"></div>
+          <div style="display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="run(this,addYear)">Add</button></div></div>
+        <p style="font-size:12px;color:#64748b;margin-bottom:10px">✎ changes the name in the list (shown to new students). Students who already saved their profile keep their saved year.</p>
+        <div id="yearList" style="display:flex;flex-wrap:wrap;gap:10px"></div>
+      </div></div>
+
+      <!-- ===== FACULTY ===== -->
+      <div id="viewAddFaculty" class="view-section"><div class="card">
+        <h3 style="margin-bottom:15px">Add &amp; Manage Faculties</h3>
+        <div class="input-row">
+          <div><label>Faculty Name</label><input type="text" id="facName"></div>
+          <div><label>Branch</label><select id="facBranch"></select></div>
+          <div><label>Category</label><select id="facCategory"></select></div></div>
+        <button class="btn btn-success" style="width:200px;margin-bottom:20px" onclick="run(this,addFac)">Add Faculty</button>
+        <div class="table-container"><table><thead><tr><th>Faculty Name</th><th>Branch</th><th>Category</th><th>Action</th></tr></thead><tbody id="facultyListBody"></tbody></table></div>
+      </div></div>
+
+      <!-- ===== SLOTS ===== -->
+      <div id="viewSlots" class="view-section"><div class="card">
+        <div class="addbox">
+          <h4>➕ Add a Particular Slot</h4>
+          <div class="input-row">
+            <div><label>Faculty</label><select id="slotFac"><option value="">Select Faculty</option></select></div>
+            <div><label>Date</label><input type="date" id="slotDate"></div>
+            <div><label>Time</label><input type="time" id="slotTime"></div>
+            <div><label>Capacity (optional)</label><input type="number" id="slotCap" min="0" placeholder="Default"></div>
+          </div>
+          <button class="btn btn-success" style="width:200px" onclick="run(this,addSlotAdmin)">Add Slot</button>
+        </div>
+        <h3 style="margin-bottom:15px">Upload Slots CSV</h3>
+        <p style="font-size:13px;margin-bottom:10px;color:#64748b">Format: <b>Faculty Name, Branch, Date (DD/MM/YYYY), Slot1, Slot2, Slot3...</b> (faculty must already be in Faculty List)</p>
+        <input type="file" id="slotsFile" accept=".csv" style="margin-bottom:15px;padding:10px;border:1px dashed #6366f1;border-radius:8px;width:100%">
+        <button class="btn btn-primary" style="width:200px;margin-bottom:30px" onclick="run(this,()=>uploadCSV('slotsFile','uploadSlots',loadSlotsAdmin))">Upload File</button>
+        <h4 style="margin-bottom:12px">Existing Slots &amp; Bookings</h4>
+        <div class="bulkbar">
+          <span class="cnt" id="slotSelCount">0 selected</span>
+          <button class="btn btn-danger sm" style="padding:7px 12px" onclick="run(this,bulkDeleteSlotsUI)">🗑 Delete Selected Slots</button>
+          <small>Tick slots for bulk delete, or use "Del Slot" on a row for a single slot.</small>
+        </div>
+        <div class="table-container"><table><thead><tr><th style="width:30px"><input type="checkbox" id="selectAllSlots" onchange="toggleAllSlots(this)"></th><th>Faculty</th><th>Date</th><th>Time Slot</th><th>Booked</th><th>Capacity (Editable)</th><th>Action</th></tr></thead><tbody id="adminSlotsBody"></tbody></table></div>
+      </div></div>
+
+      <!-- ===== USERS ===== -->
+      <div id="viewUsersCSV" class="view-section"><div class="card">
+        <div class="addbox">
+          <h4>➕ Add a Particular User</h4>
+          <div class="input-row">
+            <div><label>User ID</label><input type="text" id="addUId"></div>
+            <div><label>Phone Number</label><input type="tel" id="addUPhone" placeholder="10-digit"></div>
+            <div><label>Branch</label><select id="addUBranch"><option value="">Select Branch</option></select></div>
+            <div><label>Name (optional)</label><input type="text" id="addUName"></div>
+          </div>
+          <button class="btn btn-success" style="width:200px" onclick="run(this,addUserAdmin)">Add User</button>
+        </div>
+        <h3 style="margin-bottom:15px">Add Students to System (CSV)</h3>
+        <p style="font-size:13px;margin-bottom:10px;color:#64748b">Format: <b>User ID, Phone Number, Branch</b> (each phone number must be unique)</p>
+        <input type="file" id="usersFile" accept=".csv" style="margin-bottom:15px;padding:10px;border:1px dashed #10b981;border-radius:8px;width:100%">
+        <button class="btn btn-success" style="width:200px;margin-bottom:30px" onclick="run(this,()=>uploadCSV('usersFile','uploadUsers',loadUsersAdmin))">Upload Users</button>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px"><h4>Registered Users</h4>
+          <input type="text" id="searchUserAdmin" placeholder="Search User ID / Phone / Name..." oninput="lim.usr=PAGE;renderUsersAdminTable()" style="padding:8px;border:1px solid #ccc;border-radius:5px"></div>
+        <div class="bulkbar">
+          <span class="cnt" id="userSelCount">0 selected</span>
+          <button class="btn btn-danger sm" style="padding:7px 12px" onclick="run(this,openBulkDelUsers)">🗑 Delete Selected Users</button>
+          <small>Tick users for bulk delete, or use "Del" on a row for a single user.</small>
+        </div>
+        <div class="table-container"><table><thead><tr><th style="width:30px"><input type="checkbox" id="selectAllUsers" onchange="toggleAllUsers(this)"></th><th>User ID</th><th>Phone</th><th>Branch</th><th>Name</th><th>Target Year</th><th>Category</th><th>Status</th><th>Action</th></tr></thead><tbody id="adminUsersBody"></tbody></table></div>
+      </div></div>
+
+      <!-- ===== SETTINGS ===== -->
+      <div id="viewSettings" class="view-section"><div class="card">
+        <h3 style="margin-bottom:15px">System Settings</h3>
+        <div class="input-row"><div><label>Monthly Limit</label><input type="number" id="setLimit" min="0"></div><div><label>Default Slot Capacity</label><input type="number" id="setCapacity" min="1"></div><div><label>Booking Gap (Days)</label><input type="number" id="setGap" min="0" max="365"></div></div>
+        <div class="input-row"><div><label>Telegram Link</label><input type="text" id="setTelegram" placeholder="https://t.me/..."></div></div>
+        <div class="input-row main-only"><div><label>Admin ID</label><input type="text" id="setAdminId"></div><div><label>Admin Phone</label><input type="text" id="setAdminPhone"></div><div><label>Admin Security Code</label><input type="text" id="setAdminCode"></div></div>
+        <div class="input-row"><div><label>Report Email</label><input type="email" id="setReportEmail" placeholder="admin@example.com"></div><div><label>Daily Report Enabled</label><select id="setReportEnabled"><option value="true">Yes</option><option value="false">No</option></select></div></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-success" style="width:200px" onclick="run(this,saveSettings)">Save Settings</button>
+          <button class="btn btn-primary" style="width:200px" onclick="run(this,runReportNow)">📧 Send Report Now</button>
+        </div>
+        <div class="main-only" style="margin-top:30px;padding-top:20px;border-top:1px solid #e2e8f0">
+          <h3 style="margin-bottom:5px">Co-Admins</h3>
+          <p style="font-size:12px;color:#64748b;margin-bottom:12px">A co-admin logs in with their own phone number + security code and gets admin access (cannot manage co-admins or main admin credentials).</p>
+          <div class="input-row">
+            <div><label>Name</label><input type="text" id="coName" placeholder="Co-admin name"></div>
+            <div><label>Phone Number</label><input type="tel" id="coPhone" placeholder="10-digit"></div>
+            <div><label>Security Code</label><input type="text" id="coCode" placeholder="min 4 characters"></div>
+          </div>
+          <button class="btn btn-primary" style="width:200px;margin-bottom:15px" onclick="run(this,addCoAdminUI)">➕ Add Co-Admin</button>
+          <div class="table-container"><table><thead><tr><th>Name</th><th>Phone</th><th>Action</th></tr></thead><tbody id="coAdminBody"></tbody></table></div>
+        </div>
+      </div></div>
+
+      <!-- ===== STUDENT VIEWS ===== -->
+      <div id="viewBook" class="view-section"><div class="card">
+        <div id="telegramBanner" class="notice-banner">Join this GATE Pro Mentorship Telegram group link for further mentorship update: <a id="telegramLinkForm" href="#" target="_blank" rel="noopener">Click Here</a></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px"><h3>Book Mentorship</h3><span id="chancesBadge" class="badge bg-booked" style="font-size:14px">… Left</span></div>
+        <div class="input-group"><label class="req">Branch</label><select id="branch" onchange="filterFaculty()"></select></div>
+        <div class="input-group"><label class="req">Category</label><select id="category" onchange="filterFaculty()"></select></div>
+        <div class="input-group"><label class="req">Faculty</label><select id="faculty" onchange="fetchSlots()"><option value="">Select Faculty</option></select></div>
+        <div class="input-group"><label class="req">Date (DD/MM/YYYY)</label><select id="bookDate" onchange="fillTimes()"><option value="">Select Faculty first</option></select></div>
+        <div class="input-group"><label class="req">Time Slot</label><select id="timeSlot"><option value="">Select Date first</option></select></div>
+        <div class="input-group"><label class="req">Mail ID</label><input type="email" id="bookEmail" placeholder="student@example.com"></div>
+        <div class="input-group"><label class="req">Registered Phone Number</label><input type="tel" id="bookPhone" placeholder="10-digit number"></div>
+        <div class="input-group"><label class="req">Query</label><textarea id="query" maxlength="1000" placeholder="Write your query for the mentor"></textarea></div>
+        <div id="telegramQueryBanner" style="background:#f1f5f9;padding:10px;border-radius:8px;margin-bottom:15px;font-size:13px;display:none">Join this GATE Pro Mentorship telegram group link for further mentorship update - <a id="telegramLinkQuery" href="#" target="_blank" rel="noopener" style="color:#6366f1;font-weight:600">Click Here</a></div>
+        <button class="btn btn-success" id="bookBtn" onclick="run(this,handleBooking)">Book Now</button>
+      </div></div>
+
+      <div id="viewMySchedule" class="view-section"><div class="card">
+        <h3 style="margin-bottom:15px">My Scheduled Sessions</h3>
+        <div class="table-container"><table><thead><tr><th>ID</th><th>Date/Time</th><th>Faculty</th><th>Status</th><th>Session Status</th><th>Meeting Link</th></tr></thead><tbody id="scheduleBody"></tbody></table></div>
+      </div></div>
+
+      <div id="viewCancel" class="view-section"><div class="card">
+        <h3 style="margin-bottom:5px">Cancel Booking</h3>
+        <p style="font-size:13px;color:#64748b;margin-bottom:15px">Only upcoming sessions are listed. A session can be cancelled up to 10 hours before it starts.</p>
+        <div class="input-group"><label class="req">Select Booking</label><select id="cancelBookingId"></select></div>
+        <div class="input-group"><label class="req">Reason</label><input type="text" id="cancelReason" placeholder="Why cancel? (compulsory)" maxlength="300"></div>
+        <button class="btn btn-danger" onclick="run(this,handleCancel)">Cancel Session</button>
+      </div></div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const API_URL = "/api/proxy";
+const TOKEN_KEY = 'gpm_token', ROLE_KEY = 'gpm_role';
+let token = null, role = null, isMain = false, master = null, dash = null, dashAt = 0, pendingId = '';
+let adminBookingsList = [], students = [], slotsAdmin = [], usersAdmin = [], facSlots = [], utilData = [];
+let selectedBookings = new Set(), selectedSlots = new Set(), selectedUsers = new Set(), protectIds = new Set(), adminTriggerPhone = '';
+// big admin tables only draw the first PAGE rows (keeps the page fast); "Show more" draws the next PAGE
+const PAGE = 200, lim = { book: PAGE, stu: PAGE, usr: PAGE };
+let gapDays = 10, joinBid = '', tBook = 0, tStu = 0, tUsr = 0, tSlot = 0, masterAt = 0, masterP = null;
+const PRE = {};   // requests started in parallel with the session check on page reload
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const digits = s => String(s || '').replace(/\D/g, '').slice(-10);
+const dateOk = d => d && !isNaN(new Date(d));
+const moreRow = (cols, key, total, shown) => `<tr class="more-row"><td colspan="${cols}"><button class="btn btn-primary sm" style="padding:7px 16px" data-act="more" data-id="${key}">Show more (${total - shown} remaining)</button></td></tr>`;
+
+/* ---------- frontend error reporting (goes to the daily report with function + line) ---------- */
+let _logging = false;
+const fnFromErr = er => { const m = String(er && er.stack || '').match(/at\s+(\S+)\s+\(/); return m ? m[1] : '(anonymous)'; };
+const lineFromErr = er => { const m = String(er && er.stack || '').match(/:(\d+):\d+\)?\s*$/m); return m ? m[1] : ''; };
+function logClient(fn, line, msg, ctx) {
+  if (_logging || !token) return; _logging = true;
+  fetch(API_URL, { method: 'POST', cache: 'no-store', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ action: 'logError', token, data: { fn: String(fn), line: String(line || ''), msg: String(msg), ctx: String(ctx || '') } }) })
+    .catch(() => {}).finally(() => { _logging = false; });
+}
+window.addEventListener('error', e => logClient(fnFromErr(e.error), e.lineno || lineFromErr(e.error), e.message, 'window.onerror'));
+window.addEventListener('unhandledrejection', e => { const r = e.reason || {}; logClient(fnFromErr(r), lineFromErr(r), r.message || r, 'unhandledrejection'); });
+// a page restored from the browser back/forward cache must never show an old role's screen
+window.addEventListener('pageshow', e => { if (e.persisted) location.reload(); });
+
+/* ---------- spinner helpers: every button that runs through run() shows a spinner until the work finishes ---------- */
+async function run(btn, fn) {
+  if (!btn || btn.dataset.busy) return;
+  btn.dataset.busy = '1';
+  const old = btn.innerHTML;
+  btn.disabled = true; btn.innerHTML = '<span class="btn-spin"></span>' + old;
+  try { await fn(btn); }
+  catch (e) { console.error(e); logClient(fnFromErr(e), lineFromErr(e), e.message || e, 'button'); alert('Something went wrong. Please try again.'); }
+  finally { btn.disabled = false; btn.innerHTML = old; delete btn.dataset.busy; }
+}
+let netCount = 0, pageCount = 0;
+function netDelta(n) { netCount = Math.max(0, netCount + n); $('netBadge').style.display = netCount > 0 ? 'flex' : 'none'; }
+function pageLoading(on) { pageCount = Math.max(0, pageCount + (on ? 1 : -1)); $('viewLoader').style.display = pageCount > 0 ? 'flex' : 'none'; }
+
+/* ---------- API ---------- */
+function api(action, data, quiet) {
+  netDelta(1);
+  return fetch(API_URL, { method: 'POST', cache: 'no-store', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ action, token, data: data || {} }) })
+    .then(r => r.json())
+    .then(res => { if (res.authError && token && !quiet) forceLogout(res.message); return res; })
+    .catch(e => { logClient('api(' + action + ')', '', 'Network/parse error: ' + (e && e.message), action); return { success: false, message: 'Network error. Please try again.' }; })
+    .finally(() => netDelta(-1));
+}
+
+/* ---------- session: PER TAB (sessionStorage) - token AND role are kept together ---------- */
+function getTok() { try { return sessionStorage.getItem(TOKEN_KEY); } catch (e) { return null; } }
+function getSavedRole() { try { return sessionStorage.getItem(ROLE_KEY); } catch (e) { return null; } }
+function setTok(t, r) { try { sessionStorage.setItem(TOKEN_KEY, t); sessionStorage.setItem(ROLE_KEY, r || ''); } catch (e) {} }
+function clearSession() { try { sessionStorage.removeItem(TOKEN_KEY); sessionStorage.removeItem(ROLE_KEY); } catch (e) {} token = null; role = null; }
+function purgeLegacy() { ['gpm_token', 'studentId', 'isAdmin', 'studentName'].forEach(k => localStorage.removeItem(k)); }
+function forceLogout(msg) { clearSession(); alert(msg || 'Session expired.'); location.reload(); }
+async function logout() { if (token) await api('logout'); clearSession(); location.reload(); }
+
+window.onload = async function () {
+  purgeLegacy();
+  token = getTok();
+  if (!token) return showLogin();
+  // start the data requests at the same time as the session check (saves one full round trip on reload)
+  const sr = getSavedRole();
+  if (sr === 'student') { PRE.master = api('getMaster', null, true); PRE.dash = api('getDashboard', null, true); }
+  else if (sr === 'admin') { PRE.master = api('getMaster', null, true); PRE.admin = api('getAdminData', null, true); }
+  const res = await api('session');
+  // the role the SERVER says this token has must match the role saved at login, otherwise start clean
+  const saved = getSavedRole();
+  if (res.success && (res.role === 'admin' || res.role === 'student') && (!saved || saved === res.role)) afterAuth(res);
+  else { clearSession(); showLogin(); }
+};
+function showLogin() { $('bootLoader').style.display = 'none'; $('loginSection').style.display = 'flex'; }
+
+async function afterAuth(res) {
+  if (res.role !== 'admin' && res.role !== 'student') { clearSession(); return showLogin(); }
+  role = res.role; isMain = !!res.main;
+  // start from a clean screen every time (nothing of a previous role can stay visible)
+  $('adminMenus').style.display = 'none'; $('studentMenus').style.display = 'none'; $('dashboardLayout').style.display = 'none';
+  dash = null; dashAt = 0;
+  $('bootLoader').style.display = 'none'; $('loginSection').style.display = 'none';
+  if (role === 'student' && !(res.profile && res.profile.isComplete)) {
+    await loadMaster(); $('profileModal').style.display = 'flex'; return;
+  }
+  $('displayName').innerText = role === 'admin' ? (res.name || 'Admin') : (res.name || (res.profile && res.profile.name) || 'Student');
+  $('dashboardLayout').style.display = 'flex';
+  const admin = role === 'admin';
+  $('adminMenus').style.display = admin ? 'block' : 'none';
+  $('studentMenus').style.display = admin ? 'none' : 'block';
+  document.querySelectorAll('.main-only').forEach(el => el.style.display = isMain ? '' : 'none');
+  loadMaster();
+  await switchView(admin ? 'viewAllBookings' : 'viewBook', document.querySelector(admin ? '#adminMenus button' : '#studentMenus button'));
+}
+
+/* ---------- login ---------- */
+function showErr(m) { const e = $('loginError'); e.innerText = m; e.style.display = 'block'; }
+async function handleLogin() {
+  const p = $('loginPhone').value.trim(), codeVisible = $('adminCodeGroup').style.display !== 'none';
+  const c = codeVisible ? $('loginAdminCode').value.trim() : '';
+  if (!p) return showErr('Please enter your phone number');
+  if (codeVisible && !c) return showErr('Please enter the Security Code');
+  $('loginError').style.display = 'none';
+  const res = await api('login', { phone: p, adminCode: c });
+  if (res.success && res.token) {
+    token = res.token; setTok(token, res.role); $('loginAdminCode').value = '';
+    await afterAuth(res);
+  } else if (res.requireCode) {
+    adminTriggerPhone = digits(p);
+    $('adminCodeGroup').style.display = 'block'; $('loginAdminCode').focus();
+    showErr('Admin detected. Please enter your Security Code.');
+  } else showErr(res.message || 'Login failed');
+}
+$('loginPhone').addEventListener('input', () => {
+  if ($('adminCodeGroup').style.display !== 'none' && digits($('loginPhone').value) !== adminTriggerPhone) {
+    $('adminCodeGroup').style.display = 'none'; $('loginAdminCode').value = ''; $('loginError').style.display = 'none';
+  }
+});
+['loginPhone', 'loginAdminCode'].forEach(id => $(id).addEventListener('keydown', e => { if (e.key === 'Enter') run($('loginBtn'), handleLogin); }));
+
+async function submitProfile() {
+  const data = { name: $('profName').value.trim(), branch: $('profBranch').value, category: $('profCategory').value, batch: $('profBatch').value.trim(), year: $('profYear').value, phone: $('profPhone').value.trim() };
+  if (Object.values(data).some(v => !String(v).trim())) return alert('All fields are compulsory. Please fill every field (Name, Branch, Category, Batch, Target Year, PW Number).');
+  if (data.name.length < 2) return alert('Please enter your full name.');
+  if (master && master.categories && !master.categories.includes(data.category)) return alert('Please select a valid category from the list.');
+  const res = await api('saveProfile', data);
+  if (res.success) { $('profileModal').style.display = 'none'; const s = await api('session'); if (s.success) afterAuth(s); }
+  else alert(res.message);
+}
+
+/* ---------- master data ---------- */
+async function loadMaster(force) {
+  if (master && !force && Date.now() - masterAt < 60000) return master;
+  if (masterP && !force) return masterP;
+  masterP = (async () => {
+    const p = PRE.master; PRE.master = null;
+    const r = await (p || api('getMaster'));
+    if (r.success) { master = r.data; masterAt = Date.now(); fillMasterUI(); }
+    return master;
+  })();
+  try { return await masterP; } finally { masterP = null; }
+}
+function opts(id, arr, ph) {
+  const el = $(id); if (!el) return; const keep = el.value;
+  el.innerHTML = `<option value="">${esc(ph)}</option>` + arr.map(x => `<option>${esc(x)}</option>`).join('');
+  if (keep && arr.includes(keep)) el.value = keep;
+}
+function fillMasterUI() {
+  const cats = master.categories, brs = master.branches, facs = master.faculties, yrs = master.targetYears || [];
+  opts('facCategory', cats, 'Select'); opts('category', cats, 'Select Category'); opts('filterCategory', cats, 'All Categories');
+  opts('facBranch', brs, 'Select'); opts('branch', brs, 'Select Branch'); opts('filterBranch', brs, 'All Branches');
+  opts('searchStudentBranch', brs, 'All Branches'); opts('profBranch', brs, 'Select Branch *'); opts('addUBranch', brs, 'Select Branch');
+  opts('searchStudentCategory', cats, 'All Categories'); opts('profYear', yrs, 'Target Year *'); opts('profCategory', cats, 'Select Category *');
+  const facNames = [...new Set(facs.map(f => f.name))];
+  opts('filterFaculty', facNames, 'All Faculties'); opts('slotFac', facNames, 'Select Faculty');
+  $('categoryList').innerHTML = cats.map(c => `<span class="chip">${esc(c)} <button data-act="delCat" data-id="${esc(c)}">✕</button></span>`).join('');
+  $('branchList').innerHTML = brs.map(b => `<span class="chip">${esc(b)} <button data-act="delBr" data-id="${esc(b)}">✕</button></span>`).join('');
+  $('yearList').innerHTML = yrs.map(y => `<span class="chip">${esc(y)} <button class="ed" title="Change" data-act="editYear" data-id="${esc(y)}">✎</button><button data-act="delYear" data-id="${esc(y)}">✕</button></span>`).join('');
+  $('facultyListBody').innerHTML = facs.map(f => `<tr><td>${esc(f.name)}</td><td>${esc(f.branch)}</td><td>${esc(f.category)}</td><td><button class="btn btn-danger sm" data-act="delFac" data-id="${esc(f.name)}">Remove</button></td></tr>`).join('');
+  if (role === 'student') filterFaculty();
+}
+
+/* ---------- navigation ---------- */
+async function switchView(id, btn) {
+  document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+  $(id).classList.add('active');
+  if (btn) {
+    document.querySelectorAll('.sidebar-menu button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    $('pageTitle').innerText = btn.innerText.replace(/^[^A-Za-z]+/, '').trim();
+  }
+  const L = { viewAllBookings: () => loadAdminBookings(true), viewUtilization: loadUtilization, viewKnowStudents: () => loadStudents(true), viewSettings: loadSettings,
+              viewMySchedule: loadSchedule, viewCancel: loadCancelDropdown, viewBook: loadStudentData, viewSlots: () => loadSlotsAdmin(true), viewUsersCSV: () => loadUsersAdmin(true),
+              viewAddMaster: () => loadMaster(), viewAddFaculty: () => loadMaster() };
+  if (L[id]) {
+    // if the table already has data, show it at once (no loading overlay) and refresh it quietly in the background
+    const warm = (id === 'viewAllBookings' && adminBookingsList.length) || (id === 'viewKnowStudents' && students.length) || (id === 'viewSlots' && slotsAdmin.length) || (id === 'viewUsersCSV' && usersAdmin.length);
+    if (!warm) pageLoading(true);
+    try { await L[id](); } finally { if (!warm) pageLoading(false); }
+  }
+}
+
+/* ---------- row buttons (all get a spinner through run()) ---------- */
+const ACTIONS = {
+  join: async (b, id) => {
+    if (b.dataset.done === '1') return doJoin(id, 'yes');            // already joined once -> straight in, no question
+    joinBid = id;
+    const x = dash && dash.data ? dash.data.find(z => z.bookingId === id) : null;
+    $('joinInfo').innerText = x ? `${x.faculty} | ${x.date} ${x.time}` : '';
+    $('joinModal').style.display = 'flex';
+  },
+  more: async (b, id) => { lim[id] += PAGE; ({ book: renderAdminTable, stu: renderStudentsTable, usr: renderUsersAdminTable })[id](); },
+  delCat: async (b, id) => { if (!confirm('Remove Category?')) return; const r = await api('removeCategory', { catName: id }); alert(r.message); await loadMaster(true); },
+  delBr: async (b, id) => { if (!confirm('Remove Branch?')) return; const r = await api('removeBranch', { branchName: id }); alert(r.message); await loadMaster(true); },
+  delFac: async (b, id) => { if (!confirm('Remove Faculty?')) return; const r = await api('removeFaculty', { facName: id }); alert(r.message); await loadMaster(true); },
+  editYear: async (b, id) => { const v = prompt('Change target year "' + id + '" to:', id); if (v === null || !v.trim() || v.trim() === id) return; const r = await api('renameTargetYear', { oldYear: id, newYear: v.trim() }); alert(r.message); await loadMaster(true); },
+  delYear: async (b, id) => { if (!confirm('Remove target year ' + id + '?')) return; const r = await api('removeTargetYear', { year: id }); alert(r.message); await loadMaster(true); },
+  // link set / delete: only that one row is updated in the browser (no full reload of all bookings -> fast)
+  setLink: async (b, id, tr) => { const l = tr.querySelector('.lnk').value.trim(); const r = await api('updateLink', { bookingId: id, meetingLink: l }); alert(r.message); if (r.success) { const x = adminBookingsList.find(z => z.bookingId === id); if (x) x.meetingLink = l; } },
+  delLink: async (b, id) => { if (!confirm('Delete the meeting link of this booking?')) return; const r = await api('updateLink', { bookingId: id, meetingLink: '' }); alert(r.message); if (r.success) { const x = adminBookingsList.find(z => z.bookingId === id); if (x) x.meetingLink = ''; renderAdminTable(); } },
+  admCancel: async (b, id) => openCancelModal([id]),
+  reschedule: async (b, id) => openRescheduleModal(id),
+  saveCap: async (b, id, tr) => { const r = await api('updateSlotCapacity', { row: b.dataset.row, sig: b.dataset.sig, newCap: tr.querySelector('.cap-input').value }); alert(r.message); await loadSlotsAdmin(); },
+  delSlot: async (b) => { if (!confirm('Delete this slot?')) return; const r = await api('deleteSlot', { row: b.dataset.row, sig: b.dataset.sig }); alert(r.message); await loadSlotsAdmin(); },
+  saveUser: async (b, id, tr) => { const r = await api('updateUser', { id, phone: tr.querySelector('.ph').value, branch: tr.querySelector('.br').value, name: tr.querySelector('.nm').value }); alert(r.message); await loadUsersAdmin(); },
+  delUser: async (b, id) => { if (!confirm('Remove this user?')) return; const r = await api('deleteUser', { id }); alert(r.message); selectedUsers.delete(id); await loadUsersAdmin(); },
+  blockStu: async (b, id) => { if (!confirm('Block this student from login/booking?')) return; const r = await api('blockStudent', { id, note: 'Blocked by admin' }); alert(r.message); await loadStudents(); },
+  unblockStu: async (b, id) => { if (!confirm('Restore access for this student?')) return; const r = await api('unblockStudent', { id }); alert(r.message); await loadStudents(); },
+  delCo: async (b, id) => { if (!confirm('Remove this co-admin?')) return; const r = await api('removeCoAdmin', { phone: id }); alert(r.message); await loadCoAdmins(); }
+};
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if (!b || b.disabled) return;
+  const h = ACTIONS[b.dataset.act]; if (h) run(b, () => h(b, b.dataset.id, b.closest('tr')));
+});
+
+/* ---------- admin: bookings ---------- */
+const sessionBadge = b => {
+  if (b.status !== 'Booked') return '-';
+  if (b.isDone === 'Done') return '<span class="badge bg-done">Done</span>';
+  if (b.isDone === 'Not Done' || b.isDone === 'Not Joined' || b.isDone === 'Declined') return `<span class="badge bg-cancelled">${esc(b.isDone)}</span>`;
+  return '<span class="badge bg-pending">Pending</span>';
+};
+async function loadAdminBookings(useCache) {
+  if (useCache === true && adminBookingsList.length && Date.now() - tBook < 30000) { renderAdminTable(); return; }   // switching tabs: reuse data < 30 s old
+  const p = PRE.admin; PRE.admin = null;
+  const r = await (p || api('getAdminData')); if (r.success) { tBook = Date.now(); adminBookingsList = r.data; selectedBookings.clear(); $('selectAllBookings').checked = false; lim.book = PAGE; renderAdminTable(); }
+}
+// filters work on the data already loaded in the browser (no server call -> instant)
+async function applyBookingFilter() { lim.book = PAGE; renderAdminTable(); }
+async function resetBookingFilter() { ['filterFrom', 'filterTo', 'filterBranch', 'filterCategory', 'filterFaculty', 'filterSearch'].forEach(id => $(id).value = ''); lim.book = PAGE; renderAdminTable(); }
+function filteredBookings() {
+  const fD = $('filterFrom').value, tD = $('filterTo').value, fB = $('filterBranch').value, fC = $('filterCategory').value, fF = $('filterFaculty').value, q = $('filterSearch').value.trim().toLowerCase();
+  return adminBookingsList.filter(b => {
+    if (fD || tD) { const p = b.date.split('/'), bd = `${p[2]}-${p[1]}-${p[0]}`; if (fD && bd < fD) return false; if (tD && bd > tD) return false; }
+    return (!fB || b.branch === fB) && (!fC || b.category === fC) && (!fF || b.faculty === fF) &&
+      (!q || b.name.toLowerCase().includes(q) || b.studentId.toLowerCase().includes(q) || b.phone.toLowerCase().includes(q) || b.email.toLowerCase().includes(q));
+  });
+}
+function updateSelCount() { $('selCount').innerText = selectedBookings.size + ' selected'; }
+function renderAdminTable() {
+  const all = filteredBookings(), list = all.slice(0, lim.book);
+  $('adminBookingsBody').innerHTML = list.map(b => {
+    const booked = b.status === 'Booked';
+    const link = booked ? `<input class="lnk cell-in" value="${esc(b.meetingLink)}" placeholder="Paste Link" style="width:130px"> <button class="btn btn-success sm" data-act="setLink" data-id="${esc(b.bookingId)}">Set</button> <button class="btn btn-gray sm" title="Delete link" data-act="delLink" data-id="${esc(b.bookingId)}">🗑</button>` : '-';
+    const act = booked ? `<button class="btn btn-warn sm" title="Change date & time" data-act="reschedule" data-id="${esc(b.bookingId)}">📅</button> <button class="btn btn-danger sm" data-act="admCancel" data-id="${esc(b.bookingId)}">Cancel</button>` : '-';
+    const q = b.query ? `<br><small title="${esc(b.query)}">💬 ${esc(b.query.slice(0, 30))}${b.query.length > 30 ? '…' : ''}</small>` : '';
+    const cb = booked ? `<input type="checkbox" class="book-chk" data-id="${esc(b.bookingId)}" ${selectedBookings.has(b.bookingId) ? 'checked' : ''} onchange="toggleBookingSelect(this)">` : '';
+    const cinfo = b.status === 'Cancelled' ? `<b>${esc(b.cancelledBy || '-')}</b><br><small>${esc(b.cancelReason || '-')}</small>` : '-';
+    return `<tr><td>${cb}</td>
+      <td><b>${esc(b.name)}</b><br><small>${esc(b.studentId)}</small>${q}</td>
+      <td>${esc(b.email) || '-'}</td><td>${esc(b.phone) || '-'}</td>
+      <td>${esc(b.branch)}/${esc(b.batchName)}</td><td>${esc(b.faculty)}</td><td>${esc(b.date)}<br>${esc(b.time)}</td>
+      <td><span class="badge ${booked ? 'bg-booked' : 'bg-cancelled'}">${esc(b.status)}</span></td><td>${sessionBadge(b)}</td>
+      <td style="white-space:normal;min-width:150px">${cinfo}</td><td>${link}</td><td>${act}</td></tr>`;
+  }).join('') + (all.length > list.length ? moreRow(12, 'book', all.length, list.length) : '');
+  updateSelCount();
+}
+function toggleBookingSelect(cb) { if (cb.checked) selectedBookings.add(cb.dataset.id); else selectedBookings.delete(cb.dataset.id); updateSelCount(); }
+function toggleSelectAll(cb) {
+  document.querySelectorAll('.book-chk').forEach(el => { el.checked = cb.checked; if (cb.checked) selectedBookings.add(el.dataset.id); else selectedBookings.delete(el.dataset.id); });
+  updateSelCount();
+}
+async function clearAllBookings() {
+  if (!confirm('This will remove ALL bookings (backup saved). Continue?')) return;
+  if (prompt('Type CLEAR to confirm') !== 'CLEAR') return alert('Cancelled.');
+  const r = await api('clearAllBookings'); alert(r.message); await loadAdminBookings();
+}
+
+/* admin cancel (single + bulk): reason is compulsory and is also shown to the student */
+let cancelIds = [];
+function openCancelModal(ids) {
+  cancelIds = ids;
+  const b = ids.length === 1 ? adminBookingsList.find(x => x.bookingId === ids[0]) : null;
+  $('adminCancelInfo').innerText = ids.length === 1 ? (b ? `Student: ${b.name} | Faculty: ${b.faculty} | ${b.date} ${b.time}` : '') : `${ids.length} bookings will be cancelled with the same reason.`;
+  $('adminCancelReason').value = ''; $('adminCancelModal').style.display = 'flex';
+}
+async function openBulkCancel() { if (!needSelection()) return; openCancelModal(Array.from(selectedBookings)); }
+async function confirmAdminCancel() {
+  const reason = $('adminCancelReason').value.trim();
+  if (reason.length < 3) return alert('Cancellation reason is compulsory (at least 3 characters).');
+  const r = cancelIds.length === 1 ? await api('cancel', { bookingId: cancelIds[0], reason }) : await api('bulkCancel', { bookingIds: cancelIds, reason });
+  alert(r.message);
+  if (r.success) {
+    $('adminCancelModal').style.display = 'none';
+    const set = new Set(cancelIds);
+    adminBookingsList.forEach(b => { if (set.has(b.bookingId) && b.status === 'Booked') { b.status = 'Cancelled'; b.cancelledBy = 'Admin'; b.cancelReason = reason; } });
+    selectedBookings.clear(); $('selectAllBookings').checked = false; renderAdminTable();
+  }
+}
+
+/* reschedule */
+const dmy2ymd = d => { const p = String(d).split('/'); return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : ''; };
+function to24(t) { const m = String(t).match(/(\d+):(\d+)\s*(AM|PM)/i); if (!m) return ''; let h = +m[1]; const pm = m[3].toUpperCase() === 'PM'; if (pm && h < 12) h += 12; if (!pm && h === 12) h = 0; return String(h).padStart(2, '0') + ':' + m[2]; }
+let reschBookingId = '';
+function openRescheduleModal(bid) {
+  reschBookingId = bid;
+  const b = adminBookingsList.find(x => x.bookingId === bid);
+  $('rescheduleInfo').innerText = b ? `Student: ${b.name} | Faculty: ${b.faculty} | Current: ${b.date} ${b.time}` : '';
+  $('reschDate').value = b ? dmy2ymd(b.date) : ''; $('reschTime').value = b ? to24(b.time) : '';
+  $('rescheduleModal').style.display = 'flex';
+}
+async function confirmReschedule() {
+  const d = $('reschDate').value, t = $('reschTime').value;
+  if (!d || !t) return alert('Fill both fields');
+  const r = await api('rescheduleBooking', { bookingId: reschBookingId, date: d, time: t });
+  alert(r.message);
+  if (r.success) { $('rescheduleModal').style.display = 'none'; await loadAdminBookings(); }
+}
+function needSelection() { if (!selectedBookings.size) { alert('Select at least one booking first (checkbox in the left column).'); return false; } return true; }
+async function openBulkReschedule() {
+  if (!needSelection()) return;
+  $('bulkInfo').innerText = `${selectedBookings.size} booking(s) selected. They will all be moved to the date & time below.`;
+  $('bulkRescheduleModal').style.display = 'flex';
+}
+async function confirmBulkReschedule() {
+  const d = $('bulkDate').value, t = $('bulkTime').value;
+  if (!d || !t) return alert('Fill both fields');
+  const r = await api('bulkReschedule', { bookingIds: Array.from(selectedBookings), date: d, time: t });
+  alert(r.message);
+  if (r.success) { $('bulkRescheduleModal').style.display = 'none'; selectedBookings.clear(); await loadAdminBookings(); }
+}
+async function openBulkLink() {
+  if (!needSelection()) return;
+  $('bulkLinkInfo').innerText = `The same link will be set for ${selectedBookings.size} selected booking(s).`;
+  $('bulkLinkInput').value = ''; $('bulkLinkModal').style.display = 'flex';
+}
+async function confirmBulkLink() {
+  const l = $('bulkLinkInput').value.trim();
+  if (!l) return alert('Paste the meeting link first.');
+  const ids = new Set(selectedBookings);
+  const r = await api('bulkLink', { bookingIds: Array.from(ids), meetingLink: l });
+  alert(r.message);
+  if (r.success) { $('bulkLinkModal').style.display = 'none'; adminBookingsList.forEach(b => { if (ids.has(b.bookingId) && b.status === 'Booked') b.meetingLink = l; }); selectedBookings.clear(); $('selectAllBookings').checked = false; renderAdminTable(); }
+}
+async function bulkDeleteLinks() {
+  if (!needSelection()) return;
+  if (!confirm(`Delete the meeting link of ${selectedBookings.size} selected booking(s)?`)) return;
+  const ids = new Set(selectedBookings);
+  const r = await api('bulkLink', { bookingIds: Array.from(ids), meetingLink: '' });
+  alert(r.message);
+  if (r.success) { adminBookingsList.forEach(b => { if (ids.has(b.bookingId) && b.status === 'Booked') b.meetingLink = ''; }); selectedBookings.clear(); $('selectAllBookings').checked = false; renderAdminTable(); }
+}
+
+/* ---------- admin: utilization ---------- */
+async function loadUtilization() {
+  const r = await api('getUtilization'); if (!r.success) return;
+  utilData = r.data;
+  $('utilContainer').innerHTML = utilData.length ? '<div class="util-grid">' + utilData.map(u =>
+    `<div class="util-card"><h4>${esc(u.month)}</h4><div class="big">${u.total}</div>
+    <div class="row"><span>Done: ${u.done}</span><span>Not Joined: ${u.notJoined}</span></div>
+    <div class="row"><span>Not Done: ${u.notDone}</span><span>Declined: ${u.declined || 0}</span></div>
+    <div class="row"><span>Cancelled: ${u.cancelled}</span></div></div>`).join('') + '</div>' : '<p style="color:#64748b">No data yet.</p>';
+  $('utilBody').innerHTML = utilData.map(u => `<tr><td><b>${esc(u.month)}</b></td><td>${u.total}</td><td>${u.booked}</td><td>${u.done}</td><td>${u.notJoined}</td><td>${u.notDone}</td><td>${u.declined || 0}</td><td>${u.cancelled}</td></tr>`).join('')
+    || '<tr><td colspan="8" style="text-align:center;color:#64748b">No data</td></tr>';
+}
+
+/* ---------- CSV ---------- */
+function csvCell(v) { v = String(v == null ? '' : v); if (/^[=+\-@]/.test(v)) v = "'" + v; return '"' + v.replace(/"/g, '""') + '"'; }
+async function downloadCSV(type) {
+  let head, rows;
+  if (type === 'bookings') {
+    head = ['StudentName', 'StudentID', 'Email', 'Phone', 'Branch', 'Batch', 'Faculty', 'Date', 'Time', 'BookingStatus', 'SessionStatus', 'MeetingLink', 'Query', 'CancelledBy', 'CancelReason'];
+    rows = filteredBookings().map(b => [b.name, b.studentId, b.email, b.phone, b.branch, b.batchName, b.faculty, b.date, b.time, b.status, b.status === 'Booked' ? b.isDone : '-', b.meetingLink, b.query, b.cancelledBy || '', b.cancelReason || '']);
+  } else {
+    head = ['Name', 'StudentID', 'Branch', 'Batch', 'TargetYear', 'PWNumber', 'Category', 'Blocked'];
+    rows = filteredStudents().map(s => [s.name, s.id, s.branch, s.batch, s.year, s.phone, s.category || '', s.blocked ? 'Yes' : 'No']);
+  }
+  const csv = '\ufeff' + [head, ...rows].map(r => r.map(csvCell).join(',')).join('\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = type + '.csv'; document.body.appendChild(a); a.click(); a.remove();
+}
+
+/* ---------- admin: students ---------- */
+async function loadStudents(useCache) {
+  if (useCache === true && students.length && Date.now() - tStu < 30000) { renderStudentsTable(); return; }
+  const r = await api('getKnowYourStudents');
+  if (r.success) {
+    students = r.data; tStu = Date.now();
+    const ys = [...new Set([...(master ? master.targetYears || [] : []), ...students.map(s => s.year)].filter(Boolean))].sort();
+    opts('searchStudentYear', ys, 'All Target Years');
+    lim.stu = PAGE; renderStudentsTable();
+  }
+}
+async function applyStudentFilter() { lim.stu = PAGE; renderStudentsTable(); }
+async function resetStudentFilter() { ['searchStudentBranch', 'searchStudentYear', 'searchStudentCategory', 'searchStudentPhone'].forEach(id => $(id).value = ''); lim.stu = PAGE; renderStudentsTable(); }
+function filteredStudents() {
+  const br = $('searchStudentBranch').value, yr = $('searchStudentYear').value, cat = $('searchStudentCategory').value, q = $('searchStudentPhone').value.trim().toLowerCase();
+  return students.filter(s => (!br || s.branch === br) && (!yr || s.year === yr) && (!cat || s.category === cat) &&
+    (!q || s.name.toLowerCase().includes(q) || s.phone.toLowerCase().includes(q) || s.id.toLowerCase().includes(q)));
+}
+function renderStudentsTable() {
+  const all = filteredStudents(), list = all.slice(0, lim.stu);
+  $('studentsBody').innerHTML = list.map(s => {
+    const act = s.blocked
+      ? `<button class="btn btn-success sm" data-act="unblockStu" data-id="${esc(s.id)}">Restore Access</button>`
+      : `<button class="btn btn-danger sm" data-act="blockStu" data-id="${esc(s.id)}">Block Access</button>`;
+    return `<tr><td><b>${esc(s.name)}</b><br><small>${esc(s.id)}</small></td><td>${esc(s.branch)}</td><td>${esc(s.batch)}</td><td>${esc(s.year)}</td><td>${esc(s.phone)}</td><td>${esc(s.category || '-')}</td>
+      <td>${s.blocked ? '<span class="badge bg-blocked">Blocked</span>' : '<span class="badge bg-booked">Active</span>'}</td><td>${act}</td></tr>`;
+  }).join('') + (all.length > list.length ? moreRow(8, 'stu', all.length, list.length) : '');
+}
+
+/* ---------- admin: master / faculty ---------- */
+async function addCat() { const v = $('newCatName').value.trim(); if (!v) return alert('Enter a category name'); const r = await api('addCategory', { catName: v }); alert(r.message); $('newCatName').value = ''; await loadMaster(true); }
+async function addBranch() { const v = $('newBranchName').value.trim(); if (!v) return alert('Enter a branch name'); const r = await api('addBranch', { branchName: v }); alert(r.message); $('newBranchName').value = ''; await loadMaster(true); }
+async function addYear() { const v = $('newYearName').value.trim(); if (!v) return alert('Enter a target year'); const r = await api('addTargetYear', { year: v }); alert(r.message); if (r.success) $('newYearName').value = ''; await loadMaster(true); }
+async function addFac() {
+  const n = $('facName').value.trim(), b = $('facBranch').value, c = $('facCategory').value;
+  if (!n || !b || !c) return alert('Fill all fields');
+  const r = await api('addFaculty', { name: n, branch: b, category: c }); alert(r.message); $('facName').value = ''; await loadMaster(true);
+}
+
+/* ---------- admin: slots ---------- */
+async function loadSlotsAdmin(useCache) { if (useCache === true && slotsAdmin.length && Date.now() - tSlot < 30000) { renderSlotsAdminTable(); return; } const r = await api('getSlotsAdmin'); if (r.success) { tSlot = Date.now(); slotsAdmin = r.data; selectedSlots.clear(); $('selectAllSlots').checked = false; renderSlotsAdminTable(); } }
+const slotSig = s => `${s.faculty}|${s.date}|${s.time}`;
+function updateSlotCount() { $('slotSelCount').innerText = selectedSlots.size + ' selected'; }
+function renderSlotsAdminTable() {
+  $('adminSlotsBody').innerHTML = slotsAdmin.map(s => {
+    const sig = esc(slotSig(s)), full = s.booked >= s.capacity;
+    return `<tr><td><input type="checkbox" class="slot-chk" data-sig="${sig}" ${selectedSlots.has(slotSig(s)) ? 'checked' : ''} onchange="toggleSlotSel(this)"></td>
+      <td>${esc(s.faculty)}<br><small>${esc(s.branch)}</small></td><td>${esc(s.date)}</td><td>${esc(s.time)}</td>
+      <td><span class="slot-stat-badge ${full ? 'stat-full' : 'stat-available'}">${s.booked} Booked</span></td>
+      <td><input type="number" min="0" value="${s.capacity}" class="cap-input"> <button class="btn btn-success sm" data-act="saveCap" data-row="${s.row}" data-sig="${sig}">Save</button></td>
+      <td><button class="btn btn-danger sm" data-act="delSlot" data-row="${s.row}" data-sig="${sig}">Del Slot</button></td></tr>`;
+  }).join('');
+  updateSlotCount();
+}
+function toggleSlotSel(cb) { if (cb.checked) selectedSlots.add(cb.dataset.sig); else selectedSlots.delete(cb.dataset.sig); updateSlotCount(); }
+function toggleAllSlots(cb) {
+  document.querySelectorAll('.slot-chk').forEach(el => { el.checked = cb.checked; if (cb.checked) selectedSlots.add(el.dataset.sig); else selectedSlots.delete(el.dataset.sig); });
+  updateSlotCount();
+}
+async function bulkDeleteSlotsUI() {
+  if (!selectedSlots.size) return alert('Select at least one slot first.');
+  const items = slotsAdmin.filter(s => selectedSlots.has(slotSig(s))).map(s => ({ row: s.row, sig: slotSig(s) }));
+  const withBookings = slotsAdmin.filter(s => selectedSlots.has(slotSig(s)) && s.booked > 0).length;
+  if (!confirm(`Delete ${items.length} selected slot(s)?` + (withBookings ? `\n\nWarning: ${withBookings} of them already have bookings (bookings stay, but the slot disappears).` : ''))) return;
+  const r = await api('bulkDeleteSlots', { items }); alert(r.message); await loadSlotsAdmin();
+}
+async function addSlotAdmin() {
+  const f = $('slotFac').value, d = $('slotDate').value, t = $('slotTime').value;
+  if (!f || !d || !t) return alert('Select faculty, date and time.');
+  const r = await api('addSlot', { faculty: f, date: d, time: t, capacity: $('slotCap').value });
+  alert(r.message); if (r.success) { $('slotTime').value = ''; $('slotCap').value = ''; await loadSlotsAdmin(); }
+}
+
+/* ---------- CSV upload with a centre progress box (0 - 100 %) ---------- */
+function showProg(title, pct, text, fin) {
+  $('progressModal').style.display = 'flex';
+  $('progTitle').innerText = title; $('progPct').innerText = pct + '%'; $('progBar').style.width = pct + '%';
+  $('progText').innerHTML = text || ''; $('progClose').style.display = fin ? 'inline-flex' : 'none';
+}
+// the file is sent to the server in small parts, so the real percentage can be shown while it uploads
+async function uploadCSV(inputId, action, after) {
+  const f = $(inputId); if (!f.files.length) return alert('Please select a CSV file first.');
+  const isSlots = action === 'uploadSlots', title = isSlots ? 'Uploading Slots…' : 'Uploading Users…', what = isSlots ? 'slots' : 'users';
+  let text; try { text = await readFileText(f.files[0]); } catch (e) { return alert('Could not read the file.'); }
+  const lines = String(text).replace(/^\ufeff/, '').split(/\r?\n/).filter(l => l.trim());
+  const hdr = isSlots ? /faculty|name/i : /user|id/i;
+  const start = lines.length && hdr.test(lines[0].split(/[,;\t]/)[0]) ? 1 : 0, rows = lines.slice(start), total = rows.length;
+  if (!total) return alert('The file has no data rows.');
+  const SIZE = isSlots ? 50 : 300;
+  let added = 0, skipped = 0, why = [], failMsg = '';
+  showProg(title, 0, `0 / ${total} rows processed`);
+  for (let i = 0; i < total; i += SIZE) {
+    const r = await api(action, { csv: rows.slice(i, i + SIZE).join('\n'), noHeader: true, offset: i + start });
+    if (!r.success) { failMsg = r.message || 'Upload failed'; break; }
+    added += r.added || 0; skipped += r.skipped || 0; (r.why || []).forEach(w => { if (why.length < 5) why.push(w); });
+    const done = Math.min(total, i + SIZE);
+    showProg(title, Math.round(done * 100 / total), `${done} / ${total} rows processed`);
+  }
+  f.value = '';
+  const extra = why.length ? '<br><small>' + why.map(esc).join('<br>') + '</small>' : '';
+  if (failMsg) showProg('❌ Upload stopped', Math.round((added + skipped) * 100 / total), esc(failMsg) + `<br>${added} ${what} were already uploaded.`, true);
+  else showProg('✅ Updated', 100, `<b>${added}</b> ${what} uploaded` + (skipped ? `, <b>${skipped}</b> skipped.` : ' successfully.') + extra, true);
+  await after();
+}
+
+/* ---------- admin: users ---------- */
+async function loadUsersAdmin(useCache) { if (useCache === true && usersAdmin.length && Date.now() - tUsr < 30000) { renderUsersAdminTable(); return; } const r = await api('getUsersAdmin'); if (r.success) { tUsr = Date.now(); usersAdmin = r.data; const ids = new Set(usersAdmin.map(u => u.id)); selectedUsers.forEach(i => { if (!ids.has(i)) selectedUsers.delete(i); }); $('selectAllUsers').checked = false; lim.usr = PAGE; renderUsersAdminTable(); } }
+function filteredUsers() {
+  const q = $('searchUserAdmin').value.toLowerCase();
+  return usersAdmin.filter(u => u.id.toLowerCase().includes(q) || u.phone.includes(q) || u.name.toLowerCase().includes(q));
+}
+function updateUserCount() { $('userSelCount').innerText = selectedUsers.size + ' selected'; }
+function renderUsersAdminTable() {
+  const all = filteredUsers(), list = all.slice(0, lim.usr);
+  $('adminUsersBody').innerHTML = list.map(u => `<tr><td><input type="checkbox" class="usr-chk" data-id="${esc(u.id)}" ${selectedUsers.has(u.id) ? 'checked' : ''} onchange="toggleUserSel(this)"></td><td>${esc(u.id)}</td>
+    <td><input class="ph cell-in" value="${esc(u.phone)}" style="width:110px"></td><td><input class="br cell-in" value="${esc(u.branch)}" style="width:80px"></td><td><input class="nm cell-in" value="${esc(u.name)}" style="width:130px"></td>
+    <td>${esc(u.year) || '-'}</td><td>${esc(u.category) || '-'}</td>
+    <td>${u.blocked ? '<span class="badge bg-blocked">Blocked</span>' : '<span class="badge bg-booked">Active</span>'}</td>
+    <td><button class="btn btn-success sm" data-act="saveUser" data-id="${esc(u.id)}">Save</button> <button class="btn btn-danger sm" data-act="delUser" data-id="${esc(u.id)}">Del</button></td></tr>`).join('')
+    + (all.length > list.length ? moreRow(9, 'usr', all.length, list.length) : '');
+  updateUserCount();
+}
+function toggleUserSel(cb) { if (cb.checked) selectedUsers.add(cb.dataset.id); else selectedUsers.delete(cb.dataset.id); updateUserCount(); }
+function toggleAllUsers(cb) {
+  document.querySelectorAll('.usr-chk').forEach(el => { el.checked = cb.checked; if (cb.checked) selectedUsers.add(el.dataset.id); else selectedUsers.delete(el.dataset.id); });
+  updateUserCount();
+}
+async function addUserAdmin() {
+  const id = $('addUId').value.trim(), ph = $('addUPhone').value.trim(), br = $('addUBranch').value, nm = $('addUName').value.trim();
+  if (!id || !ph || !br) return alert('User ID, phone number and branch are required.');
+  const r = await api('addUser', { id, phone: ph, branch: br, name: nm }); alert(r.message);
+  if (r.success) { ['addUId', 'addUPhone', 'addUName'].forEach(x => $(x).value = ''); await loadUsersAdmin(); }
+}
+function parseCsv(text) {
+  const lines = String(text).replace(/^\ufeff/, '').split(/\r?\n/).filter(l => l.trim());
+  if (!lines.length) return [];
+  const d = lines[0].includes(',') ? ',' : lines[0].includes(';') ? ';' : lines[0].includes('\t') ? '\t' : ',';
+  return lines.map(l => l.split(d).map(s => s.trim().replace(/^"(.*)"$/, '$1')));
+}
+const readFileText = f => new Promise((res, rej) => { const r = new FileReader(); r.onload = e => res(e.target.result); r.onerror = () => rej(new Error('Could not read file')); r.readAsText(f); });
+async function openBulkDelUsers() {
+  if (!selectedUsers.size) return alert('Select at least one user first.');
+  $('protectFile').value = ''; $('protectResult').style.display = 'none'; $('protectResult').innerHTML = ''; protectIds = new Set();
+  $('bulkDelInfo').innerText = `${selectedUsers.size} user(s) selected for deletion.`;
+  $('bulkDelUsersModal').style.display = 'flex';
+}
+async function validateProtect() {
+  protectIds = new Set();
+  const box = $('protectResult'), f = $('protectFile').files[0]; box.style.display = 'block';
+  if (!f) { box.innerHTML = 'No file chosen – nothing is protected. All ' + selectedUsers.size + ' selected user(s) will be deleted.'; return; }
+  const rows = parseCsv(await readFileText(f)), byId = {}, byPh = {};
+  usersAdmin.forEach(u => { byId[u.id] = u; byPh[digits(u.phone)] = u; });
+  let notFound = 0, notSelected = 0, invalid = 0; const warns = [];
+  rows.forEach((p, i) => {
+    if (i === 0 && /user|id/i.test(p[0])) return;
+    const id = p[0] || '', ph = digits(p[1]);
+    if (!id && !ph) { invalid++; return; }
+    const u = byId[id] || byPh[ph];
+    if (!u) { notFound++; return; }
+    if (!selectedUsers.has(u.id)) { notSelected++; return; }
+    protectIds.add(u.id);
+    if (byId[id] && ph && digits(u.phone) !== ph) warns.push(`${u.id}: phone in file differs from system`);
+    else if (p[2] && u.branch && p[2].toLowerCase() !== u.branch.toLowerCase()) warns.push(`${u.id}: branch in file (${p[2]}) differs from system (${u.branch})`);
+    else if (p[3] && u.year && p[3] !== u.year) warns.push(`${u.id}: target year in file (${p[3]}) differs from system (${u.year})`);
+  });
+  const del = selectedUsers.size - protectIds.size;
+  box.innerHTML = `<b>✔ Validated</b><br>🛡 Protected (will NOT be deleted): <b>${protectIds.size}</b><br>🗑 Will be deleted: <b>${del}</b><br>` +
+    `Rows not in system: ${notFound} | Rows not in your selection: ${notSelected} | Invalid rows: ${invalid}` +
+    (warns.length ? `<br><span style="color:#b45309">⚠ ${warns.slice(0, 5).map(esc).join('<br>⚠ ')}${warns.length > 5 ? '<br>…and ' + (warns.length - 5) + ' more' : ''}</span>` : '');
+}
+async function confirmBulkDelUsers() {
+  if ($('protectFile').files[0]) await validateProtect(); else protectIds = new Set();
+  const ids = [...selectedUsers].filter(i => !protectIds.has(i));
+  if (!ids.length) return alert('Nothing to delete – all selected users are protected.');
+  if (!confirm(`Permanently delete ${ids.length} user(s)?` + (protectIds.size ? `\n${protectIds.size} protected user(s) will be kept.` : ''))) return;
+  const r = await api('bulkDeleteUsers', { ids }); alert(r.message);
+  if (r.success) { $('bulkDelUsersModal').style.display = 'none'; selectedUsers.clear(); await loadUsersAdmin(); }
+}
+
+/* ---------- admin: settings + co-admins ---------- */
+async function loadSettings() {
+  const r = await api('getSettings'); if (!r.success) return;
+  $('setLimit').value = r.data.limit; $('setCapacity').value = r.data.capacity; $('setGap').value = r.data.gapDays; $('setTelegram').value = r.data.telegram;
+  if (isMain) { $('setAdminId').value = r.data.adminId; $('setAdminPhone').value = r.data.adminPhone; $('setAdminCode').value = r.data.adminCode; }
+  $('setReportEmail').value = r.data.reportEmail || ''; $('setReportEnabled').value = r.data.reportEnabled || 'true';
+  if (isMain) await loadCoAdmins();
+}
+async function saveSettings() {
+  const r = await api('updateSettings', {
+    limit: $('setLimit').value, capacity: $('setCapacity').value, gapDays: $('setGap').value, telegram: $('setTelegram').value.trim(),
+    adminId: $('setAdminId').value.trim(), adminPhone: $('setAdminPhone').value.trim(), adminCode: $('setAdminCode').value.trim(),
+    reportEmail: $('setReportEmail').value.trim(), reportEnabled: $('setReportEnabled').value
+  });
+  alert(r.message);
+}
+async function runReportNow() { const r = await api('runReportNow'); alert(r.message); }
+async function loadCoAdmins() {
+  const r = await api('getCoAdmins'); if (!r.success) return;
+  $('coAdminBody').innerHTML = r.data.map(c => `<tr><td>${esc(c.name)}</td><td>${esc(c.phone)}</td><td><button class="btn btn-danger sm" data-act="delCo" data-id="${esc(c.phone)}">Remove</button></td></tr>`).join('')
+    || '<tr><td colspan="3" style="text-align:center;color:#64748b">No co-admins added</td></tr>';
+}
+async function addCoAdminUI() {
+  const name = $('coName').value.trim(), phone = $('coPhone').value.trim(), code = $('coCode').value.trim();
+  if (!phone || !code) return alert('Phone number and security code are required.');
+  const r = await api('addCoAdmin', { name, phone, code }); alert(r.message);
+  if (r.success) { ['coName', 'coPhone', 'coCode'].forEach(x => $(x).value = ''); await loadCoAdmins(); }
+}
+
+/* ---------- student ---------- */
+// dashboard data is reused for 20 s between tabs; it is cleared (dash=null) after every booking / cancel / status change
+async function getDash(force) {
+  if (!force && dash && Date.now() - dashAt < 20000) return dash;
+  const p = PRE.dash; PRE.dash = null;
+  const r = await (p || api('getDashboard')); if (r.success) { dash = r; dashAt = Date.now(); } return dash;
+}
+async function loadStudentData() {
+  const d = await getDash(false); if (!d) return;
+  if (d.gapDays != null) gapDays = d.gapDays;
+  $('chancesBadge').innerText = d.chancesLeft + '/' + d.limit + ' Left';
+  $('chancesBadge').className = 'badge ' + (d.chancesLeft <= 0 ? 'bg-cancelled' : 'bg-booked');
+  if (d.telegram && /^https?:\/\//i.test(d.telegram)) {
+    $('telegramLinkForm').href = d.telegram; $('telegramLinkQuery').href = d.telegram;
+    $('telegramBanner').style.display = 'block'; $('telegramQueryBanner').style.display = 'block';
+  }
+  pendingId = d.pendingBookingId || '';
+  if (pendingId) $('statusModal').style.display = 'flex';
+  if (master) filterFaculty();
+}
+function filterFaculty() {
+  if (!master) return;
+  const br = $('branch').value, cat = $('category').value, cur = $('faculty').value;
+  const list = master.faculties.filter(f => (!br || f.branch === br) && (!cat || f.category === cat));
+  $('faculty').innerHTML = '<option value="">Select Faculty</option>' + list.map(f => `<option value="${esc(f.name)}">${esc(f.name)}</option>`).join('');
+  if (cur && list.some(f => f.name === cur)) $('faculty').value = cur; else resetSlots();
+}
+function resetSlots() { facSlots = []; $('bookDate').innerHTML = '<option value="">Select Faculty first</option>'; $('timeSlot').innerHTML = '<option value="">Select Date first</option>'; }
+async function fetchSlots() {
+  const f = $('faculty').value; if (!f) return resetSlots();
+  $('bookDate').innerHTML = '<option value="">Loading…</option>';
+  const r = await api('getSlots', { facName: f });
+  if ($('faculty').value !== f) return;
+  facSlots = r.success ? r.data : [];
+  const dates = [...new Set(facSlots.map(s => s.date))];
+  $('bookDate').innerHTML = dates.length
+    ? '<option value="">Select Date</option>' + dates.map(d => { const p = d.split('/'), day = new Date(p[2], p[1] - 1, p[0]).toLocaleDateString('en-IN', { weekday: 'short' }); return `<option value="${esc(d)}">${esc(d)} (${day})</option>`; }).join('')
+    : '<option value="">No upcoming slots</option>';
+  $('timeSlot').innerHTML = '<option value="">Select Date first</option>';
+}
+function fillTimes() {
+  const d = $('bookDate').value;
+  $('timeSlot').innerHTML = '<option value="">Select Time</option>' + facSlots.filter(s => s.date === d)
+    .map(s => `<option value="${esc(s.time)}" ${s.full ? 'disabled' : ''}>${esc(s.time)} (${s.full ? 'Full Booked' : s.left + ' Seats Left'})</option>`).join('');
+}
+async function handleBooking() {
+  const data = { branch: $('branch').value, category: $('category').value, faculty: $('faculty').value, date: $('bookDate').value, time: $('timeSlot').value,
+                 email: $('bookEmail').value.trim(), phone: $('bookPhone').value.trim(), query: $('query').value.trim() };
+  if (Object.values(data).some(v => !v)) return alert('All fields are compulsory. Please fill every field (including Query).');
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email)) return alert('Enter a valid Mail ID.');
+  if (digits(data.phone).length !== 10) return alert('Enter a valid 10-digit phone number.');
+  const r = await api('book', data);
+  if (r.success) {
+    $('succDate').innerText = data.date; $('succTime').innerText = data.time; $('succFac').innerText = data.faculty;
+    $('succGap').innerText = gapDays; $('bookingSuccessModal').style.display = 'flex';
+    $('query').value = ''; resetSlots(); $('faculty').value = ''; dash = null;
+    switchView('viewMySchedule', document.querySelectorAll('#studentMenus button')[1]);
+  } else { alert('Booking Failed!\n' + r.message); if (data.faculty) await fetchSlots(); }
+}
+async function loadSchedule() {
+  const d = await getDash(false); if (!d) return;
+  $('scheduleBody').innerHTML = d.data.map(b => {
+    let lnk = '-';
+    if (b.linkState === 'open') lnk = `<button class="btn btn-success sm" data-act="join" data-id="${esc(b.bookingId)}" data-done="${b.isDone === 'Done' ? 1 : 0}">Join</button>`;
+    else if (b.linkState === 'expired') lnk = 'Expired'; else if (b.linkState === 'soon') lnk = 'Available 15m before';
+    const cinfo = b.status === 'Cancelled' ? `<br><small>Cancelled by: <b>${esc(b.cancelledBy || '-')}</b><br>Reason: ${esc(b.cancelReason || '-')}</small>` : '';
+    return `<tr><td>${esc(b.bookingId)}</td><td>${esc(b.date)} ${esc(b.time)}</td><td>${esc(b.faculty)}</td><td style="color:${b.status === 'Booked' ? '#10b981' : '#ef4444'}">${esc(b.status)}${cinfo}</td><td>${sessionBadge(b)}</td><td>${lnk}</td></tr>`;
+  }).join('');
+}
+/* Join flow: Yes -> marked Done + link opens, No -> marked Declined. Link is only given by the server after this answer. */
+async function doJoin(bid, choice) {
+  let w = null;
+  if (choice === 'yes') {      // open the tab NOW (inside the click) so popup blockers allow it; the link is filled in after the server answers
+    try { w = window.open('', '_blank'); if (w) { try { w.opener = null; } catch (e) {} w.document.title = 'Opening session…'; w.document.body.innerText = 'Opening your session…'; } } catch (e) { w = null; }
+  }
+  const r = await api('joinSession', { bookingId: bid, choice });
+  $('joinModal').style.display = 'none'; dash = null;
+  if (!r.success) { if (w) w.close(); alert(r.message || 'Could not join. Please try again.'); await loadSchedule(); return; }
+  if (choice === 'yes') {
+    if (!/^https?:\/\//i.test(r.link || '')) { if (w) w.close(); alert('The meeting link is invalid. Please contact support.'); }
+    else if (w) w.location.href = r.link;
+    else if (confirm('Your browser blocked the new tab. Open the session in this tab?')) location.href = r.link;
+  } else alert(r.message);
+  await loadSchedule();
+}
+async function submitJoin(choice) { return doJoin(joinBid, choice); }
+
+async function submitStatus(s) {
+  if (!pendingId) { $('statusModal').style.display = 'none'; return; }
+  const r = await api('markStatus', { bookingId: pendingId, status: s });
+  $('statusModal').style.display = 'none'; pendingId = ''; dash = null; alert(r.message);
+}
+
+/* cancel dropdown: ONLY upcoming sessions; those inside the 10-hour window are shown but disabled */
+async function loadCancelDropdown() {
+  const d = await getDash(false); if (!d) return;
+  const list = d.data.filter(b => b.upcoming);
+  const hrs = d.cancelHours || 10;
+  $('cancelBookingId').innerHTML = (list.length ? '<option value="">Select Booking</option>' : '<option value="">No upcoming bookings to cancel</option>') +
+    list.map(b => `<option value="${esc(b.bookingId)}" ${b.canCancel ? '' : 'disabled'}>${esc(b.date)} ${esc(b.time)} - ${esc(b.faculty)}${b.canCancel ? '' : ` (cancel closed: less than ${hrs} hrs left)`}</option>`).join('');
+}
+async function handleCancel() {
+  const id = $('cancelBookingId').value; if (!id) return alert('Select a booking.');
+  const reason = $('cancelReason').value.trim();
+  if (reason.length < 3) return alert('Reason is compulsory. Please write why you want to cancel (at least 3 characters).');
+  if (!confirm('Cancel this session?')) return;
+  const r = await api('cancel', { bookingId: id, reason: reason });
+  alert(r.message);
+  if (r.success) $('cancelReason').value = '';
+  dash = null; await loadCancelDropdown(); await loadStudentData();
+}
+</script>
+</body>
+</html>
