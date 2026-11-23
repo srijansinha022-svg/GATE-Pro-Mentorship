@@ -13,8 +13,8 @@
 body{background-color:#0f172a;display:flex;justify-content:center;align-items:center;min-height:100vh;min-height:100dvh;padding:20px}
 
 .bg-layer{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;pointer-events:none}
-.bg-blur{z-index:-3;background:#0f172a url('bg.jpg.png') center center/cover no-repeat;-webkit-filter:blur(18px) brightness(.85);filter:blur(18px) brightness(.85);-webkit-transform:scale(1.08);transform:scale(1.08)}
-.bg-main{z-index:-2;background:url('bg.jpg.png') center center/contain no-repeat}
+.bg-blur{z-index:-3;background:#0f172a url('bk.png') center center/cover no-repeat;-webkit-filter:blur(18px) brightness(.85);filter:blur(18px) brightness(.85);-webkit-transform:scale(1.08);transform:scale(1.08)}
+.bg-main{z-index:-2;background:url('bk.png') center center/contain no-repeat}
 body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,.45);z-index:-1;pointer-events:none}
 /* phones / tablets: the WHOLE picture stays visible (no zoom / no crop), sharp, centred; blurred copy fills the empty space around it */
 @media (max-width:900px),(orientation:portrait){
